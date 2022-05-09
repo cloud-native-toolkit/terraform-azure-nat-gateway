@@ -1,5 +1,5 @@
-#output "myoutput" {
-#  description = "Description of my output"
-#  value       = "value"
-#  depends_on  = [<some resource>]
-#}
+output "id" {
+  description = "The ID of the NAT Gateway."
+  value       = azurerm_nat_gateway.nat_gateway.id
+  depends_on  = [azurerm_nat_gateway.nat_gateway]
+}
