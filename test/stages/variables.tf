@@ -1,50 +1,29 @@
-
-# Resource Group Variables
 variable "resource_group_name" {
   type        = string
-  description = "Existing resource group where the IKS cluster will be provisioned."
-}
-
-variable "ibmcloud_api_key" {
-  type        = string
-  description = "The api key for IBM Cloud access"
+  description = "Resource group to be created."
 }
 
 variable "region" {
   type        = string
-  description = "Region for VLANs defined in private_vlan_number and public_vlan_number."
+  description = "Region/location to deploy into."
 }
 
-variable "namespace" {
+variable "subscription_id" {
   type        = string
-  description = "Namespace for tools"
+  description = "Subscription Id"
 }
 
-variable "cluster_name" {
+variable "client_id" {
   type        = string
-  description = "The name of the cluster"
-  default     = ""
+  description = "Client Id"
 }
 
-variable "cluster_type" {
+variable "client_secret" {
   type        = string
-  description = "The type of cluster that should be created (openshift or kubernetes)"
+  description = "Client secret"
 }
 
-variable "cluster_exists" {
+variable "tenant_id" {
   type        = string
-  description = "Flag indicating if the cluster already exists (true or false)"
-  default     = "true"
-}
-
-variable "name_prefix" {
-  type        = string
-  description = "Prefix name that should be used for the cluster and services. If not provided then resource_group_name will be used"
-  default     = ""
-}
-
-variable "vpc_cluster" {
-  type        = bool
-  description = "Flag indicating that this is a vpc cluster"
-  default     = false
+  description = "Tenant Id"
 }
