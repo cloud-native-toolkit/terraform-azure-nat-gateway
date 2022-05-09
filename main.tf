@@ -1,13 +1,10 @@
 
-provider "azurerm" {
-  features {}
-}
 locals {
   name_public_ip        = "${var.nat_gw_name}-ip"
   name_public_ip_prefix = "${var.nat_gw_name}-ipPrefix"
 }
 resource "azurerm_public_ip" "public_ip" {
-  name                = var.public_ip_name==""?locals.name_public_ip:var.public_ip_name
+  name                = var.public_ip_name == "" ? local.name_public_ip : var.public_ip_name
   location            = var.region
   resource_group_name = var.resource_group_name
   allocation_method   = var.public_ip_allocation_method
@@ -16,7 +13,7 @@ resource "azurerm_public_ip" "public_ip" {
 }
 
 resource "azurerm_public_ip_prefix" "public_ip_prefix" {
-  name                = var.public_ip_prefix_name==""?locals.name_public_ip_prefix:var.public_ip_prefix_name
+  name                = var.public_ip_prefix_name == "" ? local.name_public_ip_prefix : var.public_ip_prefix_name
   location            = var.region
   resource_group_name = var.resource_group_name
   prefix_length       = var.public_ip_prefix_length
