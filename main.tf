@@ -7,7 +7,7 @@ locals {
   name_public_ip_prefix = "${var.nat_gw_name}-ipPrefix"
 }
 resource "azurerm_public_ip" "public_ip" {
-  name                = local.name_public_ip
+  name                = var.public_ip_name==""?locals.name_public_ip:var.public_ip_name
   location            = var.region
   resource_group_name = var.resource_group_name
   allocation_method   = var.public_ip_allocation_method
@@ -16,7 +16,7 @@ resource "azurerm_public_ip" "public_ip" {
 }
 
 resource "azurerm_public_ip_prefix" "public_ip_prefix" {
-  name                = local.name_public_ip_prefix
+  name                = var.public_ip_prefix_name==""?locals.name_public_ip_prefix:var.public_ip_prefix_name
   location            = var.region
   resource_group_name = var.resource_group_name
   prefix_length       = var.public_ip_prefix_length
@@ -26,9 +26,7 @@ resource "azurerm_public_ip_prefix" "public_ip_prefix" {
 resource "azurerm_nat_gateway" "nat_gateway" {
   name                = var.nat_gw_name
   location            = var.region
-  resource_group_name = var.resource_group_name
-  # public_ip_address_ids   = [azurerm_public_ip.public_ip.id]
-  #public_ip_prefix_ids    = [azurerm_public_ip_prefix.public_ip_prefix.id]
+  resource_group_name = var.resource_group_name  
   sku_name                = var.nat_sku_name
   idle_timeout_in_minutes = var.nat_idle_timeout
   zones                   = var.nat_zones
