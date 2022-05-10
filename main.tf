@@ -21,9 +21,9 @@ resource "azurerm_public_ip_prefix" "public_ip_prefix" {
 }
 
 resource "azurerm_nat_gateway" "nat_gateway" {
-  name                = var.nat_gw_name
-  location            = var.region
-  resource_group_name = var.resource_group_name  
+  name                    = var.nat_gw_name
+  location                = var.region
+  resource_group_name     = var.resource_group_name
   sku_name                = var.nat_sku_name
   idle_timeout_in_minutes = var.nat_idle_timeout
   zones                   = var.nat_zones
