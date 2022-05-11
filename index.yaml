@@ -2,8 +2,96 @@ name: azure-nat-gateway
 type: terraform
 description: Module to provision nat-gateway on azure
 tags:
-  - tools
-  - devops
-versions: []
+  - azure
+  - nat-gateway
+versions:
+  - platforms: []
+    providers:
+      - name: azurerm
+        source: hashicorp/azurerm
+    dependencies:
+      - id: resource_group
+        refs:
+          - source: github.com/cloud-native-toolkit/terraform-azure-resource-group
+            version: '>= 1.0.0'
+      - id: sync
+        refs: []
+        interface: github.com/cloud-native-toolkit/automation-modules#sync
+        optional: true
+    variables:
+      - name: resource_group_name
+        type: string
+        description: >-
+          The name of the Azure resource group where the NAT gateway has been
+          provisioned
+        moduleRef:
+          id: resource_group
+          output: name
+      - name: region
+        type: string
+        description: The Azure location where the NAT gateway will be installed
+        scope: global
+      - name: nat_gw_name
+        type: string
+        description: The name of Azure NAT Gateway which will be created
+      - name: public_ip_name
+        type: string
+        description: >-
+          A Public IP Address id which should be associated with the NAT Gateway
+          resource.
+        default: ''
+      - name: public_ip_prefix_name
+        type: string
+        description: >-
+          The name of public IP prefix which should be associated with the NAT
+          Gateway resource.
+        default: ''
+      - name: public_ip_allocation_method
+        type: string
+        description: Public IP address allocation method - Static or Dynamic
+        default: Static
+      - name: public_ip_sku
+        type: string
+        description: >-
+          The SKU which should be used. At this time the only supported value is
+          Standard. Defaults to Standard.
+        default: Standard
+      - name: public_ip_zones
+        type: list(string)
+        description: >-
+          Specifies a list of Availability Zones in which this NAT Gateway
+          should be located.
+        default:
+          - '1'
+      - name: public_ip_prefix_length
+        type: number
+        description: The public IP prefix length
+        default: '30'
+      - name: nat_sku_name
+        type: string
+        description: The NAT SKU name
+        default: Standard
+      - name: nat_idle_timeout
+        type: number
+        description: The idle timeout which should be used in minutes.
+        default: '10'
+      - name: nat_zones
+        type: list(string)
+        description: >-
+          Specifies a list of Availability Zones in which this NAT Gateway
+          should be located. Changing this forces a new NAT Gateway to be
+          created
+        default:
+          - '1'
+      - name: tags
+        type: list(string)
+        description: >-
+          A mapping of tags to assign to the resource. Changing this forces a
+          new resource to be created.
+        default: []
+    version: v1.0.0
+    outputs:
+      - name: id
+        description: The ID of the NAT Gateway.
 cloudProvider: azure
 id: github.com/cloud-native-toolkit/terraform-azure-nat-gateway
