@@ -59,7 +59,7 @@ variable "nat_zones" {
 variable "tags" {
   type        = list(string)
   description = "A mapping of tags to assign to the resource. Changing this forces a new resource to be created."
-  default     = ["1"]
+  default     = []
 }
 
 
