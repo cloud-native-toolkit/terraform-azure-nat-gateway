@@ -9,7 +9,7 @@ variable "region" {
 }
 variable "nat_gw_name" {
   type        = string
-  description = "The name of Azure NAT Gateway which will be created."
+  description = "The name of Azure NAT Gateway which will be created"
 }
 variable "public_ip_name" {
   type        = string
