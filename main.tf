@@ -1,7 +1,3 @@
-provider "azurerm" {
-  features {
-  }
-}
 locals {
   name_public_ip        = "${var.nat_gw_name}-ip"
   name_public_ip_prefix = "${var.nat_gw_name}-ipPrefix"
