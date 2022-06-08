@@ -11,6 +11,13 @@ variable "nat_gw_name" {
   type        = string
   description = "The name of Azure NAT Gateway which will be created"
 }
+
+variable "existing_public_ip_name" {
+  type        = string
+  description = "The name of existing Public IP."
+  default     = ""
+}
+
 variable "public_ip_name" {
   type        = string
   description = "A Public IP Address id which should be associated with the NAT Gateway resource."
