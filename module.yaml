@@ -25,4 +25,7 @@ versions:
           output: name
       - name: region
         scope: global
+    outputs:
+      - name: id
+        description: "ID of the created NAT gateway"
 cloudProvider: azure
