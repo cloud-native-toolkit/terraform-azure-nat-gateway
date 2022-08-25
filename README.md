@@ -37,15 +37,11 @@ The module depends on the following software components:
 
 #### Terraform providers
 
-- IBM Cloud provider >= 1.5.3
+- Azure provider >= 2.9.0
 
 ### Module dependencies
 
-This module makes use of the output from other modules:
-
-- Cluster - github.com/cloud-native-toolkit/terraform-ibm-container-platform.git
-- Namespace - github.com/cloud-native-toolkit/terraform-cluster-namespace.git
-- etc
+- terraform-azure-resource-group
 
 ### Example usage
 
@@ -62,3 +58,31 @@ module "argocd" {
   name                = "argocd"
 }
 ```
+
+## Input Variables
+
+This module has the following input variables:
+| Variable | Mandatory / Optional | Default Value | Description |
+| -------------------------------- | --------------| ------------------ | ----------------------------------------------------------------------------- |
+| resource_group_name | Mandatory | "" | Resource group into which to deploy NAT gateway  |
+| region | Mandatory | "" | Azure region into which to deploy NAT gateway |
+| nat_gw_name | Mandatory | "" | Name to assign to the NAT gateway |
+| existing_public_ip_name | Optional | "" | Existing public IP to be attached to. Leave as default to create new public IP.  |
+| public_ip_name | Optional | "" | Name to assign to a created public IP |
+| public_ip_prefix_name | Optional | "" | Prefix to assign to a created public IP |
+| public_ip_allocation_method | Optional | Static | Public IP address allocation method - Static or Dynamic |
+| public_ip_sku | Optional | Standard | The Azure SKU type for the public IP |
+| public_ip_zones | Optional | 1 | List of Azure availability zones for the public IP address |
+| public_ip_prefix_length | Optional | 30 | The public IP prefix length |
+| nat_sku_name | Optional | Standard | The Azure SKU for the NAT gateway |
+| nat_idle_timeout | Optional | 10 | The idle timeout in minutes for the NAT gateway |
+| nat_zones | Optional | 1 | List of Azure availability zones for the NAT gateway |
+| tags | Optional | "" | A mapping of tags to assign the created resources |
+
+## Output Variables
+
+This module has the following outputs:
+
+| Output |  Description |
+| -------------------------------- | ----------------------------------------------------------------------------- |
+| id | ID of the NAT gateway |
