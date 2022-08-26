@@ -25,4 +25,13 @@ versions:
           output: name
       - name: region
         scope: global
+    outputs:
+      - name: id
+        description: "ID of the created NAT gateway"
+      - name: ip_address
+        description: "Address of the NAT gateway public IP"
+      - name: public_ip_id
+        description: "ID of the public IP"
+      - name: fqdn
+        description: "The FQDN of the A DNS record associated with the public IP"
 cloudProvider: azure
