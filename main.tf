@@ -15,7 +15,7 @@ resource "azurerm_public_ip" "public_ip" {
 }
 
 data "azurerm_public_ip" "public_ip" {
-  name                = var.existing_public_ip_name == "" ? var.existing_public_ip_name : azurerm_public_ip.public_ip[0].name
+  name                = var.existing_public_ip_name == "" ? azurerm_public_ip.public_ip[0].name : var.existing_public_ip_name
   resource_group_name = var.resource_group_name
 }
 
