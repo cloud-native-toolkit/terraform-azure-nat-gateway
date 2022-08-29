@@ -44,3 +44,8 @@ resource "azurerm_nat_gateway_public_ip_prefix_association" "nat_gateway_public_
   nat_gateway_id      = azurerm_nat_gateway.nat_gateway.id
   public_ip_prefix_id = azurerm_public_ip_prefix.public_ip_prefix.id
 }
+
+resource "azurerm_subnet_nat_gateway_association" "subnet_association" {
+  subnet_id         = var.subnet_id
+  nat_gateway_id    = azurerm_nat_gateway.nat_gateway.id
+}

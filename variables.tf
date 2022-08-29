@@ -12,6 +12,11 @@ variable "nat_gw_name" {
   description = "The name of Azure NAT Gateway which will be created"
 }
 
+variable "subnet_id" {
+  type        = string
+  description = "Subnet id to associate with NAT gateway"
+}
+
 variable "existing_public_ip_name" {
   type        = string
   description = "The name of existing Public IP."
