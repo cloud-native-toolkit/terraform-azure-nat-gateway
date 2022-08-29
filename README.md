@@ -1,88 +1,100 @@
-# Starter kit for a Terraform module
+# Azure NAT Gateway
 
-This is a Starter kit to help with the creation of Terraform modules. The basic structure of a Terraform module is fairly
-simple and consists of the following basic values:
+## Module Overview
 
-- README.md - provides a description of the module
-- main.tf - defiens the logic for the module
-- variables.tf (optional) - defines the input variables for the module
-- outputs.tf (optional) - defines the values that are output from the module
+Module creates an Azure NAT Gateway with public IP and attaches to a provided subnet. Includes the following resources:
+- azurerm_public_ip
+- azurerm_public_ip_prefix
+- azurerm_nat_gateway
+- azurerm_nat_gateway_public_ip_association
+- azurerm_nat_gateway_public_ip_prefix_association
+- azurerm_nat_gateway_association
 
-Beyond those files, any other content can be added and organized however you see fit. For example, you can add a `scripts/` directory
-that contains shell scripts executed by a `local-exec` `null_resource` in the terraform module. The contents will depend on what your
-module does and how it does it.
-
-## Instructions for creating a new module
-
-1. Update the title and description in the README to match the module you are creating
-2. Fill out the remaining sections in the README template as appropriate
-3. Implement your logic in the in the main.tf, variables.tf, and outputs.tf
-4. Use releases/tags to manage release versions of your module
-
-## Module overview
-
-### Description
-
-Description of module
-
-**Note:** This module follows the Terraform conventions regarding how provider configuration is defined within the Terraform template and passed into the module - https://www.terraform.io/docs/language/modules/develop/providers.html. The default provider configuration flows through to the module. If different configuration is required for a module, it can be explicitly passed in the `providers` block of the module - https://www.terraform.io/docs/language/modules/develop/providers.html#passing-providers-explicitly.
+### Prerequisities
 
 ### Software dependencies
 
-The module depends on the following software components:
+- terraform >= 1.2.6
 
-#### Command-line tools
+### Terraform providers
 
-- terraform >= v0.15
-
-#### Terraform providers
-
-- Azure provider >= 2.9.0
+- Azure provider >= 3.0.0
 
 ### Module dependencies
 
-- terraform-azure-resource-group
+This modules makes use of the output from other modules:
+- Azure Resource Group - github.com/cloud-native-toolkit/terraform-azure-resource-group
+- Azure VNet - github.com/cloud-native-toolkit/terraform-azure-vnet
+- Azure Subnets - github.com/cloud-native-toolkit/terraform-azure-subnets
 
-### Example usage
+## Example Usage
 
 ```hcl-terraform
-module "argocd" {
-  source = "github.com/cloud-native-toolkit/terraform-tools-argocd.git"
+module "resource_group" {
+  source = "github.com/cloud-native-toolkit/terraform-azure-resource-group"
 
-  cluster_config_file = module.dev_cluster.config_file_path
-  cluster_type        = module.dev_cluster.type
-  app_namespace       = module.dev_cluster_namespaces.tools_namespace_name
-  ingress_subdomain   = module.dev_cluster.ingress_hostname
-  olm_namespace       = module.dev_software_olm.olm_namespace
-  operator_namespace  = module.dev_software_olm.target_namespace
-  name                = "argocd"
+  resource_group_name = "mytest-rg"
+  region              = var.region
+}
+
+module "vnet" {
+  source = "github.com/cloud-native-toolkit/terraform-azure-vnet"
+
+  name_prefix         = "mytest"
+  resource_group_name = module.resource_group.name
+  region              = module.resource_group.region
+  address_prefixes    = ["10.0.0.0/18"]
+}
+
+module "subnets" {
+  source = "github.com/cloud-native-toolkit/terraform-azure-subnets"
+
+  resource_group_name = module.resource_group.name
+  region              = module.resource_group.region
+  vnet_name           = module.vnet.name
+  ipv4_cidr_blocks    = ["10.0.0.0/24"]
+  acl_rules           = []
+}
+
+module "azure-nat_gateway" {
+  source               = "github.com/cloud-native-toolkit/terraform-azure-nat-gateway"
+  
+  nat_gw_name          = "mytest-nat"  
+  resource_group_name  = module.resource_group.name
+  region               = module.resource_group.region
+  subnet_id            = module.subnets.id
 }
 ```
 
-## Input Variables
+## Variables
+
+### Inputs
 
 This module has the following input variables:
 | Variable | Mandatory / Optional | Default Value | Description |
 | -------------------------------- | --------------| ------------------ | ----------------------------------------------------------------------------- |
-| resource_group_name | Mandatory | "" | Resource group into which to deploy NAT gateway  |
-| region | Mandatory | "" | Azure region into which to deploy NAT gateway |
-| nat_gw_name | Mandatory | "" | Name to assign to the NAT gateway |
-| existing_public_ip_name | Optional | "" | Existing public IP to be attached to. Leave as default to create new public IP.  |
-| public_ip_name | Optional | "" | Name to assign to a created public IP |
-| public_ip_prefix_name | Optional | "" | Prefix to assign to a created public IP |
-| public_ip_allocation_method | Optional | Static | Public IP address allocation method - Static or Dynamic |
-| public_ip_sku | Optional | Standard | The Azure SKU type for the public IP |
-| public_ip_zones | Optional | 1 | List of Azure availability zones for the public IP address |
+| resource_group_name | Mandatory |  | The resource group to which to associate the NAT gateway  |
+| region | Mandatory |  | The Azure location into which to deploy the NAT gateway |
+| nat_gw_name | Mandatory |  | The name to give the NAT gateway |
+| subnet_id | Mandatory |  | The id of the subnet in the vnet to which to associate the NAT gateway |
+| existing_public_ip_name | Optional | "" | Name of an existing public IP to which to associate the NAT gateway (if not provided will create one) |
+| public_ip_name  | Optional | "" | Overwrite name to apply to the created public ip (will append \"-pip\" to the nat_gw_name if not provided) |
+| public_ip_prefix_name  | Optional | "" | Overwrite name to apply to the created public ip prefix (will append \"-ipPrefix\" to the nat_gw_name if not provided) |
+| public_ip_allocation_method | Optional | Static | Public IP address allocation method |
+| public_ip_sku | Optional | Standard | Public IP SKU |
+| public_ip_zones | Optional | \[ 1 \] | List of Azure availability zones to which the public IP should be located |
 | public_ip_prefix_length | Optional | 30 | The public IP prefix length |
-| nat_sku_name | Optional | Standard | The Azure SKU for the NAT gateway |
-| nat_idle_timeout | Optional | 10 | The idle timeout in minutes for the NAT gateway |
-| nat_zones | Optional | 1 | List of Azure availability zones for the NAT gateway |
-| tags | Optional | "" | A mapping of tags to assign the created resources |
+| nat_sku_name | Optional | Standard | The NAT SKU name |
+| nat_idle_timeout | Optional | 10 | The idle timeout for the NAT gateway in minutes |
+| nat_zones | Optional | \[ 1 \] | List of Azure availability zones to which the NAT gateway should be located |
+| tags | Optional | \[ \] | Mapping of tags to assign to the NAT gateway |
 
-## Output Variables
+### Outputs
 
-This module has the following outputs:
-
-| Output |  Description |
-| -------------------------------- | ----------------------------------------------------------------------------- |
-| id | ID of the NAT gateway |
+The module outputs the following values:
+| Output | Description |
+| -------------------------------- | -------------------------------------------------------------------------- |
+| id | The Id of the deployed NAT gateway |
+| ip_address | The address of the created or supplied public IP |
+| public_ip_id | The Azure Id of the created or supplied public IP |
+| fqdn | The FQDN of the A DNS record associated with the public IP |
